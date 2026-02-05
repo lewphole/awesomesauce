@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine?</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Times New Roman", cursive, sans-serif;
+      background: white;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: background 0.4s;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #000000;
+    }
+
+    .box {
+      z-index: 2;
+      background: rgba(255,255,255,0.8);
+      padding: 30px;
+      border-radius: 20px;
+    }
+
+    label {
+      font-size: 1.5em;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    #message {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+
+    /* Hearts */
+    .heart {
+      position: absolute;
+      color: red;
+      font-size: 20px;
+      animation: float 6s linear infinite;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateX(-50px);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(110vw);
+        opacity: 0;
+      }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: red;
+      animation: fall 3s linear infinite;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateY(-10px);
+      }
+      to {
+        transform: translateY(110vh);
+      }
+    }
+
+    /* Star background */
+    .star-bg {
+      background-image: url("https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif");
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>adrian will you be my valentine</h1>
+
+    <label>
+      <input type="checkbox" id="yes"> yes
+    </label>
+
+    <label>
+      <input type="checkbox" id="no"> no
+    </label>
+
+    <div id="message"></div>
+  </div>
+
+<script>
+  const yes = document.getElementById("yes");
+  const no = document.getElementById("no");
+  const msg = document.getElementById("message");
+
+  // OPTIONAL: put your webhook URL here
+  const WEBHOOK_URL = "https://webhook.site/YOUR-UNIQUE-URL";
+
+  function notify(choice) {
+    if (!WEBHOOK_URL.includes("YOUR-UNIQUE-URL")) {
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ answer: choice, time: new Date() })
+      });
+    }
+  }
+
+  yes.addEventListener("change", () => {
+    if (yes.checked) {
+      no.checked = false;
+      msg.textContent = "hooray";
+      document.body.classList.add("star-bg");
+      document.body.style.background = "white";
+      confetti();
+      notify("YES");
+    }
+  });
+
+  no.addEventListener("change", () => {
+    if (no.checked) {
+      yes.checked = false;
+      msg.textContent = "nuh uh";
+      document.body.style.background = "red";
+      notify("NO");
+    }
+  });
+
+  // Hearts generator
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "❤️";
+    heart.style.top = Math.random() * 100 + "vh";
+    heart.style.fontSize = Math.random() * 20 + 15 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 300);
+
+  function confetti() {
+    for (let i = 0; i < 100; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+      c.style.animationDuration = Math.random()*2 + 2 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3000);
+    }
+  }
+</script>
+
+</body>
+</html>
+
