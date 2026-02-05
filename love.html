@@ -18,9 +18,8 @@
     }
 
     h1 {
-      font-size: 8em; /* BIG initially */
+      font-size: 8em;
       color: #000000;
-      transition: font-size 0.4s;
     }
 
     .box {
@@ -28,6 +27,7 @@
       background: rgba(255,255,255,0.8);
       padding: 30px;
       border-radius: 20px;
+      position: relative;
     }
 
     label {
@@ -45,6 +45,11 @@
       margin-top: 20px;
     }
 
+    #counter {
+      font-size: 2em;
+      margin-top: 10px;
+    }
+
     /* Hearts */
     .heart {
       position: absolute;
@@ -54,14 +59,8 @@
     }
 
     @keyframes float {
-      from {
-        transform: translateX(-50px);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(110vw);
-        opacity: 0;
-      }
+      from { transform: translateX(-50px); opacity: 1; }
+      to { transform: translateX(110vw); opacity: 0; }
     }
 
     /* Confetti */
@@ -83,6 +82,10 @@
       background-size: cover;
       background-position: center;
     }
+
+    .bouncing {
+      position: fixed;
+    }
   </style>
 </head>
 <body>
@@ -99,6 +102,7 @@
     </label>
 
     <div id="message"></div>
+    <div id="counter">wrong attempts: 0</div>
   </div>
 
 <script>
@@ -107,12 +111,40 @@
   const msg = document.getElementById("message");
   const yesLabel = document.getElementById("yesLabel");
   const noLabel = document.getElementById("noLabel");
+  const counter = document.getElementById("counter");
 
   let yesScale = 1;
   let noScale = 1;
+  let wrongAttempts = 0;
 
-  yesLabel.style.transform = `scale(${yesScale})`;
-  noLabel.style.transform = `scale(${noScale})`;
+  let bouncing = false;
+  let x = window.innerWidth / 2;
+  let y = window.innerHeight / 2;
+  let vx = 4;
+  let vy = 4;
+
+  function startNoBounce() {
+    if (bouncing) return;
+    bouncing = true;
+    noLabel.classList.add("bouncing");
+
+    function move() {
+      const rect = noLabel.getBoundingClientRect();
+
+      x += vx;
+      y += vy;
+
+      if (x < 0 || x + rect.width > window.innerWidth) vx *= -1;
+      if (y < 0 || y + rect.height > window.innerHeight) vy *= -1;
+
+      noLabel.style.left = x + "px";
+      noLabel.style.top = y + "px";
+
+      requestAnimationFrame(move);
+    }
+
+    move();
+  }
 
   yes.addEventListener("change", () => {
     if (yes.checked) {
@@ -130,12 +162,16 @@
       msg.textContent = "nuh uh";
       document.body.style.background = "red";
 
+      wrongAttempts++;
+      counter.textContent = `wrong attempts: ${wrongAttempts}`;
+
+      startNoBounce();
+
       setTimeout(() => {
         no.checked = false;
 
-        // evil scaling logic
-        yesScale = Math.min(yesScale + 0.25, 4);
-        noScale = Math.max(noScale - 0.15, 0.3);
+        yesScale = Math.min(yesScale + 0.25, 5);
+        noScale = Math.max(noScale - 0.15, 0.25);
 
         yesLabel.style.transform = `scale(${yesScale})`;
         noLabel.style.transform = `scale(${noScale})`;
