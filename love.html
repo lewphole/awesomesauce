@@ -137,4 +137,37 @@
         yesScale = Math.min(yesScale + 0.25, 4);
         noScale = Math.max(noScale - 0.15, 0.3);
 
-        yesLabel.style.transform = `scale(${yesS
+        yesLabel.style.transform = `scale(${yesScale})`;
+        noLabel.style.transform = `scale(${noScale})`;
+
+        document.body.style.background = "white";
+      }, 1000);
+    }
+  });
+
+  // Hearts generator
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "❤️";
+    heart.style.top = Math.random() * 100 + "vh";
+    heart.style.fontSize = Math.random() * 20 + 15 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 300);
+
+  function confetti() {
+    for (let i = 0; i < 100; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+      c.style.animationDuration = Math.random()*2 + 2 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3000);
+    }
+  }
+</script>
+
+</body>
+</html>
