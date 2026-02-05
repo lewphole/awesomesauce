@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Valentine?</title>
+  <title>pls i need this</title>
   <style>
     body {
       margin: 0;
@@ -18,8 +18,9 @@
     }
 
     h1 {
-      font-size: 3em;
+      font-size: 5em; /* BIG initially */
       color: #000000;
+      transition: font-size 0.4s;
     }
 
     .box {
@@ -33,6 +34,10 @@
       font-size: 1.5em;
       margin: 10px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.4s;
     }
 
     #message {
@@ -64,17 +69,12 @@
       position: absolute;
       width: 8px;
       height: 8px;
-      background: red;
       animation: fall 3s linear infinite;
     }
 
     @keyframes fall {
-      from {
-        transform: translateY(-10px);
-      }
-      to {
-        transform: translateY(110vh);
-      }
+      from { transform: translateY(-10px); }
+      to { transform: translateY(110vh); }
     }
 
     /* Star background */
@@ -90,11 +90,11 @@
   <div class="box">
     <h1>adrian will you be my valentine</h1>
 
-    <label>
+    <label id="yesLabel">
       <input type="checkbox" id="yes"> yes
     </label>
 
-    <label>
+    <label id="noLabel">
       <input type="checkbox" id="no"> no
     </label>
 
@@ -105,19 +105,14 @@
   const yes = document.getElementById("yes");
   const no = document.getElementById("no");
   const msg = document.getElementById("message");
+  const yesLabel = document.getElementById("yesLabel");
+  const noLabel = document.getElementById("noLabel");
 
-  // OPTIONAL: put your webhook URL here
-  const WEBHOOK_URL = "https://webhook.site/YOUR-UNIQUE-URL";
+  let yesScale = 1;
+  let noScale = 1;
 
-  function notify(choice) {
-    if (!WEBHOOK_URL.includes("YOUR-UNIQUE-URL")) {
-      fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ answer: choice, time: new Date() })
-      });
-    }
-  }
+  yesLabel.style.transform = `scale(${yesScale})`;
+  noLabel.style.transform = `scale(${noScale})`;
 
   yes.addEventListener("change", () => {
     if (yes.checked) {
@@ -126,7 +121,6 @@
       document.body.classList.add("star-bg");
       document.body.style.background = "white";
       confetti();
-      notify("YES");
     }
   });
 
@@ -135,34 +129,12 @@
       yes.checked = false;
       msg.textContent = "nuh uh";
       document.body.style.background = "red";
-      notify("NO");
-    }
-  });
 
-  // Hearts generator
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.textContent = "❤️";
-    heart.style.top = Math.random() * 100 + "vh";
-    heart.style.fontSize = Math.random() * 20 + 15 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
-  }, 300);
+      setTimeout(() => {
+        no.checked = false;
 
-  function confetti() {
-    for (let i = 0; i < 100; i++) {
-      const c = document.createElement("div");
-      c.className = "confetti";
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.background = `hsl(${Math.random()*360},100%,50%)`;
-      c.style.animationDuration = Math.random()*2 + 2 + "s";
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 3000);
-    }
-  }
-</script>
+        // evil scaling logic
+        yesScale = Math.min(yesScale + 0.25, 4);
+        noScale = Math.max(noScale - 0.15, 0.3);
 
-</body>
-</html>
-
+        yesLabel.style.transform = `scale(${yesS
