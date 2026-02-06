@@ -1,201 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>a letter</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      font-family: "Times New Roman", serif;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: background 0.4s;
-    }
+<meta charset="UTF-8">
+<title>a letter</title>
 
-    /* Container */
-    .envelope-container {
-      text-align: center;
-      cursor: pointer;
-    }
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: "Times New Roman", serif;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.4s;
+}
 
-    .hint {
-      margin-top: 20px;
-      font-size: 1.3em;
-      color: #555;
-    }
+/* === Envelope container === */
+.envelope-container {
+  text-align: center;
+  cursor: pointer;
+}
 
-    /* Envelope */
-    .envelope {
-      width: 420px;
-      height: 280px;
-      background: #eaeaea;
-      position: relative;
-      border: 2px solid #ccc;
-      overflow: hidden;
-    }
+/* === Envelope === */
+.envelope {
+  position: relative;
+  width: 520px;
+  height: 340px;
+  background: #e6e6e6;
+  border: 2px solid #ccc;
+  overflow: hidden;
+}
 
-    .flap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #ddd;
-      clip-path: polygon(0 0, 100% 0, 50% 55%);
-      transform-origin: top;
-      transition: transform 0.8s;
-      z-index: 3;
-    }
+/* back of envelope */
+.envelope-back {
+  position: absolute;
+  inset: 0;
+  background: #e6e6e6;
+  z-index: 1;
+}
 
-    /* Letter wrapper (animated) */
-    .letter-wrapper {
-      position: absolute;
-      bottom: -100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 380px;
-      transition: bottom 1s;
-      z-index: 2;
-    }
+/* front flap */
+.envelope-flap {
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;
+  transition: transform 0.8s;
+  z-index: 3;
+}
 
-    /* Letter itself (scrollable, stable) */
-    .letter {
-      max-height: 420px;
-      background: white;
-      border: 1px solid #ccc;
-      padding: 30px;
-      box-sizing: border-box;
-      overflow-y: auto;
-      text-align: left;
-    }
+/* === Letter wrapper (animated) === */
+.letter-wrapper {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 440px;
+  z-index: 2;
+  transition: transform 1s ease;
+}
 
-    .letter h1 {
-      font-size: 1.8em;
-      margin-top: 0;
-    }
+/* === Letter (scrollable, NOT animated) === */
+.letter {
+  max-height: 420px;
+  background: white;
+  border: 1px solid #bbb;
+  padding: 30px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
 
-    .question {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 1.4em;
-    }
+/* hide scrollbar bugs */
+.letter::-webkit-scrollbar {
+  width: 8px;
+}
 
-    .choices {
-      margin-top: 15px;
-      font-size: 1.3em;
-    }
+.letter::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
 
-    .choices label {
-      margin: 0 15px;
-      cursor: pointer;
-    }
+/* text */
+.letter h1 {
+  margin-top: 0;
+  font-size: 1.8em;
+}
 
-    /* Open state */
-    .open .flap {
-      transform: rotateX(180deg);
-    }
+.question {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 1.4em;
+}
 
-    .open .letter-wrapper {
-      bottom: 10px;
-    }
+.choices {
+  margin-top: 15px;
+  font-size: 1.3em;
+}
 
-    /* Confetti */
-    .confetti {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      animation: fall 3s linear infinite;
-      z-index: 10;
-    }
+.choices label {
+  margin: 0 15px;
+}
 
-    @keyframes fall {
-      from { transform: translateY(-10px); }
-      to { transform: translateY(110vh); }
-    }
-  </style>
+/* closed state: letter hidden INSIDE envelope */
+.closed .letter-wrapper {
+  transform: translate(-50%, 140%);
+}
+
+/* open state */
+.open .letter-wrapper {
+  transform: translate(-50%, -90%);
+}
+
+.open .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+/* hint */
+.hint {
+  margin-top: 20px;
+  font-size: 1.3em;
+  color: #555;
+}
+
+/* confetti */
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  animation: fall 3s linear infinite;
+  z-index: 10;
+}
+
+@keyframes fall {
+  from { transform: translateY(-10px); }
+  to { transform: translateY(110vh); }
+}
+</style>
 </head>
+
 <body>
 
-  <div class="envelope-container" id="container">
-    <div class="envelope">
-      <div class="flap"></div>
+<div class="envelope-container closed" id="container">
+  <div class="envelope">
+    <div class="envelope-back"></div>
 
-      <div class="letter-wrapper">
-        <div class="letter">
-          <h1>Dear Adrian,</h1>
+    <div class="letter-wrapper">
+      <div class="letter">
+        <h1>Dear Adrian,</h1>
 
-          <p>
-            I wasn’t sure how to start this, so I’ll just be honest.
-            You’re someone I really appreciate — the way conversations feel easy,
-            the way time passes faster, the way things feel a little lighter.
-          </p>
+        <p>
+          I wanted to write this instead of saying it out loud, because sometimes
+          that feels easier and more honest. You’re someone I really care about,
+          and being around you just feels comfortable in a way that’s hard to explain.
+        </p>
 
-          <p>
-            This isn’t meant to be overwhelming or dramatic. It’s just something
-            I wanted to share in a quiet, sincere way.
-          </p>
+        <p>
+          This isn’t meant to be overwhelming — just something real, and something
+          I wanted you to know.
+        </p>
 
-          <p>
-            Thank you for being you.
-          </p>
+        <p>
+          Thank you for being you.
+        </p>
 
-          <div class="question">
-            will you be my valentine
-            <div class="choices">
-              <label><input type="checkbox" id="yes"> yes</label>
-              <label><input type="checkbox" id="no"> no</label>
-            </div>
+        <div class="question">
+          will you be my valentine
+          <div class="choices">
+            <label><input type="checkbox" id="yes"> yes</label>
+            <label><input type="checkbox" id="no"> no</label>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="hint">click to open</div>
+    <div class="envelope-flap"></div>
   </div>
 
+  <div class="hint">click to open</div>
+</div>
+
 <script>
-  const container = document.getElementById("container");
-  const yes = document.getElementById("yes");
-  const no = document.getElementById("no");
+const container = document.getElementById("container");
+const yes = document.getElementById("yes");
+const no = document.getElementById("no");
 
-  let opened = false;
+let opened = false;
 
-  container.addEventListener("click", () => {
-    if (!opened) {
-      container.classList.add("open");
-      opened = true;
-    }
-  });
-
-  yes.addEventListener("change", () => {
-    if (yes.checked) {
-      no.checked = false;
-      confetti();
-    }
-  });
-
-  no.addEventListener("change", () => {
-    if (no.checked) {
-      yes.checked = false;
-      document.body.style.background = "red";
-    }
-  });
-
-  function confetti() {
-    for (let i = 0; i < 120; i++) {
-      const c = document.createElement("div");
-      c.className = "confetti";
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.background = `hsl(${Math.random()*360},100%,50%)`;
-      c.style.animationDuration = Math.random()*2 + 2 + "s";
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 3000);
-    }
+container.addEventListener("click", () => {
+  if (!opened) {
+    container.classList.remove("closed");
+    container.classList.add("open");
+    opened = true;
   }
+});
+
+yes.addEventListener("change", () => {
+  if (yes.checked) {
+    no.checked = false;
+    confetti();
+  }
+});
+
+no.addEventListener("change", () => {
+  if (no.checked) {
+    yes.checked = false;
+    document.body.style.background = "red";
+  }
+});
+
+function confetti() {
+  for (let i = 0; i < 120; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+    c.style.animationDuration = Math.random()*2 + 2 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
 </script>
 
 </body>
