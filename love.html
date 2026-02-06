@@ -14,10 +14,12 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.4s;
+  overflow: hidden;
 }
 
 /* === Envelope container === */
 .envelope-container {
+  position: relative;
   text-align: center;
   cursor: pointer;
 }
@@ -29,10 +31,9 @@ body {
   height: 340px;
   background: #e6e6e6;
   border: 2px solid #ccc;
-  overflow: hidden;
 }
 
-/* back of envelope */
+/* back / bottom of envelope */
 .envelope-back {
   position: absolute;
   inset: 0;
@@ -51,45 +52,48 @@ body {
   z-index: 3;
 }
 
-/* === Letter wrapper (animated) === */
-.letter-wrapper {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 440px;
-  z-index: 2;
-  transition: transform 1s ease;
-}
-
-/* === Letter (scrollable, NOT animated) === */
+/* === Letter (SEPARATE from envelope) === */
 .letter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  max-height: 360px;
   background: #fffdf7;
   padding: 30px;
-  width: 420px;
-  max-height: 360px;   /* THIS enables scrolling */
-  overflow-y: auto;    /* scrollbar appears when needed */
   border-radius: 10px;
   box-sizing: border-box;
+  overflow-y: auto;
+
+  transform: translate(-50%, -10%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  z-index: 5;
 }
 
-
-/* hide scrollbar bugs */
+/* scrollbar */
 .letter::-webkit-scrollbar {
   width: 8px;
 }
-
 .letter::-webkit-scrollbar-thumb {
   background: #ccc;
+  border-radius: 10px;
 }
-
-.letter::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
-  
 .letter::-webkit-scrollbar-track {
   background: #f2f2f2;
-  border-radius: 10px;
+}
+
+/* open state */
+.open + .letter {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -45%);
+}
+
+/* flap open */
+.open .envelope-flap {
+  transform: rotateX(180deg);
 }
 
 /* text */
@@ -111,22 +115,6 @@ body {
 
 .choices label {
   margin: 0 15px;
-}
-
-
-/* closed: letter fully hidden inside */
-.closed .letter-wrapper {
-  transform: translate(-50%, 120%);
-}
-
-/* open: letter pops out but stays visible */
-.open .letter-wrapper {
-  transform: translate(-50%, -20%);
-}
-
-
-.open .envelope-flap {
-  transform: rotateX(180deg);
 }
 
 /* hint */
@@ -154,47 +142,44 @@ body {
 
 <body>
 
-<div class="envelope-container closed" id="container">
+<div class="envelope-container closed openable" id="container">
   <div class="envelope">
     <div class="envelope-back"></div>
-
-    <div class="letter-wrapper">
-      <div class="letter">
-        <h1>Dear Adrian,</h1>
-
-        <p>
-          I wanted to write this instead of saying it out loud, because sometimes
-          that feels easier and more honest. You’re someone I really care about,
-          and being around you just feels comfortable in a way that’s hard to explain.
-        </p>
-
-        <p>
-          This isn’t meant to be overwhelming — just something real, and something
-          I wanted you to know.
-        </p>
-
-        <p>
-          Thank you for being you.
-        </p>
-
-        <div class="question">
-          will you be my valentine
-          <div class="choices">
-            <label><input type="checkbox" id="yes"> yes</label>
-            <label><input type="checkbox" id="no"> no</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="envelope-flap"></div>
   </div>
-
   <div class="hint">click to open</div>
+</div>
+
+<div class="letter" id="letter">
+  <h1>Dear Adrian,</h1>
+
+  <p>
+    I wanted to write this instead of saying it out loud, because sometimes
+    that feels easier and more honest. You’re someone I really care about,
+    and being around you just feels comfortable in a way that’s hard to explain.
+  </p>
+
+  <p>
+    This isn’t meant to be overwhelming — just something real, and something
+    I wanted you to know.
+  </p>
+
+  <p>
+    Thank you for being you.
+  </p>
+
+  <div class="question">
+    will you be my valentine
+    <div class="choices">
+      <label><input type="checkbox" id="yes"> yes</label>
+      <label><input type="checkbox" id="no"> no</label>
+    </div>
+  </div>
 </div>
 
 <script>
 const container = document.getElementById("container");
+const letter = document.getElementById("letter");
 const yes = document.getElementById("yes");
 const no = document.getElementById("no");
 
@@ -202,8 +187,8 @@ let opened = false;
 
 container.addEventListener("click", () => {
   if (!opened) {
-    container.classList.remove("closed");
     container.classList.add("open");
+    letter.previousElementSibling.classList.add("open");
     opened = true;
   }
 });
