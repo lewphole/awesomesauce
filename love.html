@@ -102,15 +102,17 @@ body {
   margin: 0 15px;
 }
 
-/* closed state: letter hidden INSIDE envelope */
+
+/* closed: letter fully hidden inside */
 .closed .letter-wrapper {
-  transform: translate(-50%, 140%);
+  transform: translate(-50%, 120%);
 }
 
-/* open state */
+/* open: letter pops out but stays visible */
 .open .letter-wrapper {
-  transform: translate(-50%, -90%);
+  transform: translate(-50%, -20%);
 }
+
 
 .open .envelope-flap {
   transform: rotateX(180deg);
