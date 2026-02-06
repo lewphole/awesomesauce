@@ -2,207 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>pls i need this</title>
+  <title>a letter</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
-      font-family: "Times New Roman", cursive, sans-serif;
-      background: white;
-      overflow: hidden;
+      font-family: "Times New Roman", serif;
+      background: #f5f5f5;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Envelope container */
+    .envelope-container {
       text-align: center;
-      transition: background 0.4s;
-    }
-
-    h1 {
-      font-size: 8em;
-      color: #000000;
-    }
-
-    .box {
-      z-index: 2;
-      background: rgba(255,255,255,0.8);
-      padding: 30px;
-      border-radius: 20px;
-      position: relative;
-    }
-
-    label {
-      font-size: 4em;
-      margin: 8px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 0.4s;
     }
 
-    #message {
-      font-size: 4em;
-      margin-top: 20px;
+    .hint {
+      margin-top: 15px;
+      font-size: 1.2em;
+      color: #555;
     }
 
-    #counter {
-      font-size: 2em;
-      margin-top: 10px;
+    /* Envelope */
+    .envelope {
+      width: 300px;
+      height: 200px;
+      background: #eaeaea;
+      position: relative;
+      border: 2px solid #ccc;
+      overflow: hidden;
     }
 
-    /* Hearts */
-    .heart {
+    .flap {
       position: absolute;
-      color: red;
-      font-size: 20px;
-      animation: float 6s linear infinite;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ddd;
+      clip-path: polygon(0 0, 100% 0, 50% 50%);
+      transform-origin: top;
+      transition: transform 0.8s;
+      z-index: 3;
     }
 
-    @keyframes float {
-      from { transform: translateX(-50px); opacity: 1; }
-      to { transform: translateX(110vw); opacity: 0; }
-    }
-
-    /* Confetti */
-    .confetti {
+    /* Letter */
+    .letter {
       position: absolute;
-      width: 8px;
-      height: 8px;
-      animation: fall 3s linear infinite;
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      height: 320px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      transition: bottom 1s;
+      z-index: 2;
+      text-align: left;
     }
 
-    @keyframes fall {
-      from { transform: translateY(-10px); }
-      to { transform: translateY(110vh); }
+    .letter h1 {
+      font-size: 1.6em;
+      margin-top: 0;
     }
 
-    /* Star background */
-    .star-bg {
-      background-image: url("https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif");
-      background-size: cover;
-      background-position: center;
+    .question {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 1.3em;
     }
 
-    .bouncing {
-      position: fixed;
+    .choices {
+      margin-top: 15px;
+      font-size: 1.2em;
+    }
+
+    .choices label {
+      margin: 0 10px;
+      cursor: pointer;
+    }
+
+    /* Open state */
+    .open .flap {
+      transform: rotateX(180deg);
+    }
+
+    .open .letter {
+      bottom: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <h1>adrian will you be my valentine</h1>
+  <div class="envelope-container" id="envelopeContainer">
+    <div class="envelope">
+      <div class="flap"></div>
 
-    <label id="yesLabel">
-      <input type="checkbox" id="yes"> yes
-    </label>
+      <div class="letter">
+        <h1>Dear Adrian,</h1>
 
-    <label id="noLabel">
-      <input type="checkbox" id="no"> no
-    </label>
+        <p>
+          I’ve been thinking about how to write this, and honestly there isn’t
+          a perfect way to put it into words. I just wanted to say that you’re
+          someone I really appreciate — the way you make things feel lighter,
+          the way conversations flow, the way time seems to move faster around you.
+        </p>
 
-    <div id="message"></div>
-    <div id="counter">wrong attempts: 0</div>
+        <p>
+          This isn’t meant to be dramatic or overwhelming. It’s just something
+          I wanted to share, quietly and sincerely.
+        </p>
+
+        <p>
+          Thank you for being you.
+        </p>
+
+        <div class="question">
+          will you be my valentine
+          <div class="choices">
+            <label><input type="checkbox"> yes</label>
+            <label><input type="checkbox"> no</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint">click to open</div>
   </div>
 
 <script>
-  const yes = document.getElementById("yes");
-  const no = document.getElementById("no");
-  const msg = document.getElementById("message");
-  const yesLabel = document.getElementById("yesLabel");
-  const noLabel = document.getElementById("noLabel");
-  const counter = document.getElementById("counter");
+  const container = document.getElementById("envelopeContainer");
+  let opened = false;
 
-  let yesScale = 1;
-  let noScale = 1;
-  let wrongAttempts = 0;
-
-  let bouncing = false;
-  let x = window.innerWidth / 2;
-  let y = window.innerHeight / 2;
-  let vx = 4;
-  let vy = 4;
-
-  function startNoBounce() {
-    if (bouncing) return;
-    bouncing = true;
-    noLabel.classList.add("bouncing");
-
-    function move() {
-      const rect = noLabel.getBoundingClientRect();
-
-      x += vx;
-      y += vy;
-
-      if (x < 0 || x + rect.width > window.innerWidth) vx *= -1;
-      if (y < 0 || y + rect.height > window.innerHeight) vy *= -1;
-
-      noLabel.style.left = x + "px";
-      noLabel.style.top = y + "px";
-
-      requestAnimationFrame(move);
-    }
-
-    move();
-  }
-
-  yes.addEventListener("change", () => {
-    if (yes.checked) {
-      no.checked = false;
-      msg.textContent = "hooray";
-      document.body.classList.add("star-bg");
-      document.body.style.background = "white";
-      confetti();
+  container.addEventListener("click", () => {
+    if (!opened) {
+      container.classList.add("open");
+      opened = true;
     }
   });
-
-  no.addEventListener("change", () => {
-    if (no.checked) {
-      yes.checked = false;
-      msg.textContent = "nuh uh";
-      document.body.style.background = "red";
-
-      wrongAttempts++;
-      counter.textContent = `wrong attempts: ${wrongAttempts}`;
-
-      startNoBounce();
-
-      setTimeout(() => {
-        no.checked = false;
-
-        yesScale = Math.min(yesScale + 0.25, 5);
-        noScale = Math.max(noScale - 0.15, 0.25);
-
-        yesLabel.style.transform = `scale(${yesScale})`;
-        noLabel.style.transform = `scale(${noScale})`;
-
-        document.body.style.background = "white";
-      }, 1000);
-    }
-  });
-
-  // Hearts generator
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.textContent = "❤️";
-    heart.style.top = Math.random() * 100 + "vh";
-    heart.style.fontSize = Math.random() * 20 + 15 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
-  }, 300);
-
-  function confetti() {
-    for (let i = 0; i < 100; i++) {
-      const c = document.createElement("div");
-      c.className = "confetti";
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.background = `hsl(${Math.random()*360},100%,50%)`;
-      c.style.animationDuration = Math.random()*2 + 2 + "s";
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 3000);
-    }
-  }
 </script>
 
 </body>
